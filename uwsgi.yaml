@@ -1,0 +1,9 @@
+uwsgi:
+  pythonpath: .
+  module: runserver
+  callable: app
+  http:  0.0.0.0:5003
+  pidfile: crm_uwsgi.pid
+  max-requests: 5000
+  lazy-apps: True
+  chmod-socket: 777

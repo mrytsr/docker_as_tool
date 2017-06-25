@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="reveal.js/css/reveal.min.css"/>
+    <style type="text/css">code{white-space: pre;}</style>
+    <link rel="stylesheet" href="reveal.js/css/theme/black.css" id="theme">
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+    <!--[if lt IE 9]>
+    <script src="reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+
+<section id="部署文档" class="slide level1">
+<h1>部署文档</h1>
+<pre><code>$ uname -a
+Linux pd-dev-bvcflow-01 3.16.0-4-amd64 #1 SMP Debian 3.16.7-ckt11-1+deb8u3 ...
+
+sudo apt remove php5-redis
+tar xvf redis-2.2.8.tgz
+cd redis-2.2.8/
+./configure
+phpize
+make -j2
+sudo make install
+
+wget http://ffmpeg.org/releases/ffmpeg-3.1.4.tar.bz2
+tar xvf ffmpeg-3.1.4.tar.bz2
+cd ffmpeg-3.1.4
+make -j2
+sudo make install
+
+wget swoole-src-1.8.10-stable.tar.gz
+cd swoole
+phpize
+./configure
+make
+sudo make install
+vim /etc/php5/cli/php.ini
+extension=swoole.so
+
+sudo apt install supervisor nginx php5 php5-dev redis-server php5-fpm php5-gd
+vim /etc/php5/fpm/pool.d/www.conf // pm.max_children = 20
+vim /etc/nginx/nginx.conf
+vim /etc/default/rsync
+vim /etc/rsyncd.conf
+vim /etc/rsyncd_secrets
+chmod o+w log/
+chmod o+w /data/vg0/ /data/vg1/
+
+git clone ...
+sudo apt install php5-curl
+composer.phar update
+cp -r config_sample/ config</code></pre>
+</section>
+<section id="其他方案" class="slide level1">
+<h1>其他方案</h1>
+<ul>
+<li class="fragment">puppet / saltstack / ansible</li>
+<li class="fragment">virtualbox</li>
+<li class="fragment">vagrant</li>
+<li class="fragment">python-virtualenv</li>
+<li class="fragment">KVM</li>
+<li class="fragment">OpenStack</li>
+</ul>
+</section>
+<section class="slide level1">
+
+<figure>
+<img src="http://static.zybuluo.com/mrytsr/f3n2hb8lwxoatdo2al5q94c5/R351508499TJ.jpg" />
+</figure>
+<h2 id="docker---build-ship-and-run-any-app-anywhere">Docker - Build, Ship, and Run Any App, Anywhere</h2>
+<p>https://www.docker.com/</p>
+</section>
+<section id="原理" class="slide level1">
+<h1>原理</h1>
+<ul>
+<li class="fragment">chroot + cgroups + namespace</li>
+<li class="fragment">LXC</li>
+<li class="fragment">docker-runC</li>
+</ul>
+</section>
+<section class="slide level1">
+
+<figure>
+<img src="images/k.jpg" />
+</figure>
+</section>
+<section class="slide level1">
+
+<figure>
+<img src="images/j.jpg" />
+</figure>
+</section>
+<section class="slide level1">
+
+<figure>
+<img src="images/h.jpg" />
+</figure>
+</section>
+<section id="几个核心概念" class="slide level1">
+<h1>几个核心概念</h1>
+<ul>
+<li class="fragment">仓库 - repository</li>
+<li class="fragment">镜像 - image</li>
+<li class="fragment">容器 - container</li>
+</ul>
+</section>
+<section id="commands" class="slide level1">
+<h1>Commands</h1>
+</section>
+<section id="全局" class="slide level1">
+<h1>全局</h1>
+<pre><code>login     Log in to a Docker registry
+logout    Log out from a Docker registry
+pull      Pull an image or a repository from a registry
+push      Push an image or a repository to a registry
+search    Search the Docker Hub for images
+volume    Manage Docker volumes
+version   Show the Docker version information
+network   Manage Docker networks
+stats     Display a live stream of container(s) resource usage statistics
+info      Display system-wide information
+events    Get real time events from the server
+inspect   Return low-level information on a container or image</code></pre>
+</section>
+<section id="镜像" class="slide level1">
+<h1>镜像</h1>
+<pre><code>tag       Tag an image into a repository
+history   Show the history of an image
+rmi       Remove one or more images
+images    List images
+commit    Create a new image from a container&#39;s changes
+export    Export a container&#39;s filesystem as a tar archive
+import    Import the contents from a tarball to create a filesystem image
+save      Save one or more images to a tar archive
+load      Load an image from a tar archive or STDIN
+kill      Kill a running container
+run       Run a command in a new container</code></pre>
+</section>
+<section id="容器" class="slide level1">
+<h1>容器</h1>
+<pre><code>create    Create a new container
+attach    Attach to a running container
+cp        Copy files/folders between a container and the local filesystem
+diff      Inspect changes on a container&#39;s filesystem
+exec      Run a command in a running container
+start     Start one or more stopped containers
+stop      Stop a running container
+rm        Remove one or more containers
+logs      Fetch the logs of a container
+port      List port mappings or a specific mapping for the CONTAINER
+ps        List containers
+pause     Pause all processes within a container
+unpause   Unpause all processes within a container
+top       Display the running processes of a container
+rename    Rename a container
+restart   Restart a container
+wait      Block until a container stops, then print its exit code
+update    Update configuration of one or more containers</code></pre>
+</section>
+<section class="slide level1">
+
+<h2 id="dockerfile">Dockerfile</h2>
+<pre><code>from php:7.0.12-fpm-alpine
+run sed -i &#39;s/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/&#39; /etc/apk/repositories
+run apk update
+run apk add autoconf g++ make linux-headers bash zlib-dev ffmpeg libpng-dev openrc nginx
+run docker-php-ext-install gd &amp;&amp; docker-php-ext-enable gd
+
+add . .
+run tar xvf swoole-1.8.12.tgz &amp;&amp; cd swoole-1.8.12/ &amp;&amp;  phpize &amp;&amp;./configure &amp;&amp; make &amp;&amp; make install
+run docker-php-ext-enable swoole &amp;&amp; docker-php-ext-install pdo_mysql
+run pecl install redis &amp;&amp; docker-php-ext-enable redis
+copy ./etc_localtime /etc/localtime</code></pre>
+<ul>
+<li class="fragment">docker build . -t tangjunxing/myflask:v1</li>
+<li class="fragment">docker create tangjunxing/myflask:v1 --name container_name</li>
+<li class="fragment">docker start container_name</li>
+<li class="fragment">docker ps container_name</li>
+</ul>
+</section>
+<section class="slide level1">
+
+<h2 id="docker-compose">docker-compose</h2>
+<pre><code>docker-compose.yaml
+    app:
+      image: 3fcc2dbcb3dd
+      build: hello-flask
+      ports:
+        - 5180:5180
+      volumes:
+        - ./v:/v
+      command: python /v/a.py</code></pre>
+<ul>
+<li class="fragment">docker-compose up -d</li>
+<li class="fragment">docker-compose ps name</li>
+<li class="fragment">docker-compose exec name sh</li>
+</ul>
+</section>
+<section id="存储" class="slide level1">
+<h1>存储</h1>
+<pre><code>Storage Driver: aufs
+Root Dir: /var/lib/docker/aufs
+Backing Filesystem: xfs
+Dirs: 269
+Dirperm1 Supported: true</code></pre>
+</section>
+<section id="为什么要分层文件系统" class="slide level1">
+<h1>为什么要分层文件系统</h1>
+<ul>
+<li class="fragment">pull一个ubuntu的镜像,自己安装python,flask</li>
+<li class="fragment">pull一个python的镜像,自己安装flask</li>
+<li class="fragment">pull一个flask的镜像,直接使用</li>
+</ul>
+</section>
+<section id="网络" class="slide level1">
+<h1>网络</h1>
+<pre><code>$ docker network ls
+NETWORK ID          NAME                DRIVER
+c8a4f98bfc82        bridge              bridge
+175a8d2b4a66        host                host
+371bf33a9760        none                null</code></pre>
+</section>
+<section id="性能" class="slide level1">
+<h1>性能</h1>
+</section>
+<section class="slide level1">
+
+<p>ps auxf |grep -B2 php</p>
+</section>
+<section class="slide level1">
+
+<pre><code>$ curl &quot;http://127.0.0.1:7080/index.html&quot;
+hello docker!!!
+
+Running 10s test @ http://127.0.0.1:7080/index.html
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.12ms    5.26ms  38.12ms   84.93%
+    Req/Sec    14.84k     1.95k   28.35k    72.64%
+  296712 requests in 10.10s, 71.29MB read
+Requests/sec:  29378.69
+Transfer/sec:      7.06MB</code></pre>
+</section>
+<section class="slide level1">
+
+<pre><code>curl &quot;http://127.0.0.1:5080/index.html&quot;
+hello nginx
+
+Running 10s test @ http://127.0.0.1:5080/index.html
+  2 threads and 10 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency     3.67ms    5.50ms  45.77ms   81.60%
+    Req/Sec    19.98k     1.69k   21.98k    90.50%
+  397534 requests in 10.00s, 94.00MB read
+Requests/sec:  39746.02
+Transfer/sec:      9.40MB</code></pre>
+</section>
+<section id="cpu" class="slide level1">
+<h1>cpu</h1>
+<h2 id="host">host</h2>
+<pre><code>tjx $ echo &quot;scale=5000;4*a(1)&quot;|time bc -l -q|tail -1
+17.72user 0.00system 0:17.73elapsed 99%CPU (0avgtext+0avgdata 2032maxresident)k
+0inputs+0outputs (0major+129minor)pagefaults 0swaps
+73774418426312986080998886874132604720</code></pre>
+<h2 id="docker">docker</h2>
+<pre><code>/var/www/html # echo &quot;scale=5000;4*a(1)&quot;|time bc -l -q|tail -1
+73774418426312986080998886874132604720
+real    0m 20.50s
+user    0m 20.49s
+sys     0m 0.00s</code></pre>
+</section>
+<section id="disk-io" class="slide level1">
+<h1>disk-io</h1>
+<h2 id="host-1">host</h2>
+<pre><code>tjx $ time dd if=/dev/zero of=/tmp/test1.img bs=1G count=1 oflag=sync                                             1+0 records in                                           1+0 records out                                          1073741824 bytes (1.1 GB) copied, 9.6779 s, 111 MB/s     0.00user 1.00system 0:09.88elapsed 10%CPU (0avgtext+0avgdata 1050568maxresident)k
+0inputs+2097152outputs (0major+262227minor)pagefaults 0swaps</code></pre>
+<h2 id="docker-1">docker</h2>
+<pre><code>/var/www/html # time dd if=/dev/zero of=/tmp/test1.img bs=1G count=1 conv=sync
+1+0 records in
+0+1 records out
+real    0m 7.60s
+user    0m 0.00s
+sys     0m 0.72s</code></pre>
+</section>
+<section id="使用docker的两种姿势" class="slide level1">
+<h1>使用docker的两种姿势</h1>
+<ul>
+<li class="fragment">daemon - supervisor nginx php-fpm python-web</li>
+<li class="fragment">cli - composer php-cli npm</li>
+</ul>
+</section>
+<section id="tips" class="slide level1">
+<h1>tips</h1>
+</section>
+<section id="非linux环境" class="slide level1">
+<h1>非linux环境</h1>
+<ul>
+<li class="fragment">(win/mac)docker-toolbox - boot2docker</li>
+<li class="fragment">(win10)docker for windows - Hyper-v</li>
+<li class="fragment">(mac)docker for mac</li>
+</ul>
+</section>
+<section id="加速-docker-pull" class="slide level1">
+<h1>加速 docker pull</h1>
+<pre><code>cat /etc/default/docker
+DOCKER_OPTS=&quot;--registry-mirror=https://enka2nxd.mirror.aliyuncs.com&quot;</code></pre>
+</section>
+<section id="alpine" class="slide level1">
+<h1>Alpine</h1>
+<pre><code>tjx $ sudo docker images|grep nginx
+nginx           54.21 MB
+nginx:alpine    190.5 MB</code></pre>
+</section>
+<section id="shell" class="slide level1">
+<h1>Shell</h1>
+<ul>
+<li class="fragment">ssh docker_up - 错误用法</li>
+<li class="fragment">docker exec -ti CONTAINERID bash</li>
+<li class="fragment">docker attach</li>
+<li class="fragment">nsenter(docker-enter)</li>
+</ul>
+</section>
+<section class="slide level1">
+
+<p>Thanks</p>
+<h3 id="参考文献">参考文献</h3>
+<pre><code>library/scratch - Docker Hub https://hub.docker.com/_/scratch/
+http://stackoverflow.com/questions/22111060/difference-between-expose-and-publish-in-docker
+最新博客条目 - 公共博客 https://www.ibm.com/developerworks/community/blogs/roller-ui/homepage?lang=zh
+UC技术博客 | tech.uc.cn http://tech.uc.cn/
+微容器：更小的，更轻便的Docker容器 | phper http://chattool.sinaapp.com/?p=1200
+wsargent/docker-cheat-sheet: Docker Cheat Sheet https://github.com/wsargent/docker-cheat-sheet
+GitLab Container Registry | GitLab https://about.gitlab.com/2016/05/23/gitlab-container-registry/
+Alpine Linux 镜像源使用帮助 [LUG@USTC] https://lug.ustc.edu.cn/wiki/mirrors/help/alpine
+https://docs.docker.com/compose/compose-file/#net
+Docker Hub Mirror使用手册 - DockOne.io http://dockone.io/article/160</code></pre>
+</section>
+    </div>
+  </div>
+
+
+  <script src="reveal.js/lib/js/head.min.js"></script>
+  <script src="reveal.js/js/reveal.min.js"></script>
+
+  <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+//          { src: 'reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
+</html>
